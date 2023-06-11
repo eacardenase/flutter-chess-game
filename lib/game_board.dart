@@ -123,6 +123,37 @@ class _GameBoardState extends State<GameBoard> {
 
         break;
       case ChessPieceType.knight:
+        // all eight possible L shapes the knight can move
+        var knightMoves = [
+          [-2, -1], // up 2 left 1
+          [-2, 1], // up 2 right 1
+          [-1, -2], // up 1 left 2
+          [-1, 2], // up 1 right 2
+          [1, -2], // down 1 left 2
+          [1, 2], // down 1 right 2
+          [2, -1], // down 2 left 1
+          [2, 1], // down 2 right 1
+        ];
+
+        for (final move in knightMoves) {
+          var newRow = row + move[0];
+          var newCol = col + move[1];
+
+          if (!isInBoard(newRow, newCol)) {
+            continue;
+          }
+
+          if (board[newRow][newCol] != null) {
+            if (board[newRow][newCol]!.isWhite != piece.isWhite) {
+              candidateMoves.add([newRow, newCol]); // capture enemy piece
+            }
+
+            continue; // blocked
+          }
+
+          candidateMoves.add([newRow, newCol]);
+        }
+
         break;
       case ChessPieceType.bishop:
         break;
