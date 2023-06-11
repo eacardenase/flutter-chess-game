@@ -43,6 +43,12 @@ class _GameBoardState extends State<GameBoard> {
   // A boolean to indicate whose turn it is
   bool isWhiteTurn = true;
 
+  // initial position of kings
+  // keep track of this to make it easier to see if king is in check
+  List<int> whiteKingPosition = [7, 4];
+  List<int> blackKingPosition = [0, 4];
+  bool checkStatus = false;
+
   // USER SELECTED A PIECE
   void pieceSelected(int row, int col) {
     setState(() {
@@ -376,7 +382,7 @@ class _GameBoardState extends State<GameBoard> {
       isWhite: false,
     );
 
-    newBoard[7][4] = const ChessPiece(
+    newBoard[7][3] = const ChessPiece(
       type: ChessPieceType.queen,
       isWhite: true,
     );
@@ -387,7 +393,7 @@ class _GameBoardState extends State<GameBoard> {
       isWhite: false,
     );
 
-    newBoard[7][3] = const ChessPiece(
+    newBoard[7][4] = const ChessPiece(
       type: ChessPieceType.king,
       isWhite: true,
     );
@@ -413,6 +419,13 @@ class _GameBoardState extends State<GameBoard> {
     board[newRow][newCol] = selectedPiece;
     board[selectedRow][selectedCol] = null;
 
+    // see if any king are under attack
+    if (isKingInCheck(!isWhiteTurn)) {
+      checkStatus = true;
+    } else {
+      checkStatus = false;
+    }
+
     // clear selection
     setState(() {
       selectedPiece = null;
@@ -423,6 +436,33 @@ class _GameBoardState extends State<GameBoard> {
 
     // change turns
     isWhiteTurn = !isWhiteTurn;
+  }
+
+  bool isKingInCheck(bool isWhiteKing) {
+    // get position of the king
+    List<int> kingPosition =
+        isWhiteKing ? whiteKingPosition : blackKingPosition;
+
+    // check if any enemy piece can attack the king
+    for (var i = 0; i < 8; i++) {
+      for (var j = 0; j < 8; j++) {
+        // skip empty squares and pieces of the same color as the king
+        if (board[i][j] == null || board[i][j]!.isWhite == isWhiteKing) {
+          continue;
+        }
+
+        List<List<int>> pieceValidMoves =
+            calculateRawValidMoves(i, j, board[i][j]);
+
+        // check if the king's position is in any of this piece's moves
+        if (pieceValidMoves.any((move) =>
+            move[0] == kingPosition[0] && move[1] == kingPosition[1])) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   @override
@@ -443,6 +483,10 @@ class _GameBoardState extends State<GameBoard> {
                 isWhite: true,
               ),
             ),
+          ),
+          // GAME STATUS
+          Text(
+            checkStatus ? 'CHECK' : "",
           ),
           // CHESS BOARD
           Expanded(
