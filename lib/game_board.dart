@@ -40,14 +40,19 @@ class _GameBoardState extends State<GameBoard> {
   // A list of black pieces that have been captured
   List<ChessPiece> blackPiecesTaken = [];
 
+  // A boolean to indicate whose turn it is
+  bool isWhiteTurn = true;
+
   // USER SELECTED A PIECE
   void pieceSelected(int row, int col) {
     setState(() {
       // No piece has been selected yet, this is the first selection
       if (selectedPiece == null && board[row][col] != null) {
-        selectedPiece = board[row][col];
-        selectedRow = row;
-        selectedCol = col;
+        if (board[row][col]!.isWhite == isWhiteTurn) {
+          selectedPiece = board[row][col];
+          selectedRow = row;
+          selectedCol = col;
+        }
       }
       // There is a piece already selected,
       // but user can select another one of their pieces
@@ -415,6 +420,9 @@ class _GameBoardState extends State<GameBoard> {
       selectedCol = -1;
       validMoves = [];
     });
+
+    // change turns
+    isWhiteTurn = !isWhiteTurn;
   }
 
   @override
