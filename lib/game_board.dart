@@ -41,6 +41,11 @@ class _GameBoardState extends State<GameBoard> {
         selectedPiece = board[row][col];
         selectedRow = row;
         selectedCol = col;
+      } else if (selectedPiece != null &&
+          validMoves.any((element) => element[0] == row && element[1] == col)) {
+        // if there is a piece selected and user taps on
+        // a square that is a valid move, move the piece there
+        movePiece(row, col);
       }
 
       // if a piece is selected, calculate it's valid moves
@@ -52,6 +57,10 @@ class _GameBoardState extends State<GameBoard> {
   // CALCULATE RAW VALID MOVES
   List<List<int>> calculateRawValidMoves(int row, int col, ChessPiece? piece) {
     List<List<int>> candidateMoves = [];
+
+    if (piece == null) {
+      return [];
+    }
 
     // different directions based on their color
     int direction = piece!.isWhite ? -1 : 1;
@@ -364,6 +373,21 @@ class _GameBoardState extends State<GameBoard> {
     );
 
     board = newBoard;
+  }
+
+  // MOVE PIECE
+  void movePiece(int newRow, int newCol) {
+    // move the piece and clear the old spot
+    board[newRow][newCol] = selectedPiece;
+    board[selectedRow][selectedCol] = null;
+
+    // clear selection
+    setState(() {
+      selectedPiece = null;
+      selectedRow = -1;
+      selectedCol = -1;
+      validMoves = [];
+    });
   }
 
   @override
