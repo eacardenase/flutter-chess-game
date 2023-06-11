@@ -36,8 +36,16 @@ class _GameBoardState extends State<GameBoard> {
   // USER SELECTED A PIECE
   void pieceSelected(int row, int col) {
     setState(() {
-      // selected a piece if there is a piece in that position
-      if (board[row][col] != null) {
+      // No piece has been selected yet, this is the first selection
+      if (selectedPiece == null && board[row][col] != null) {
+        selectedPiece = board[row][col];
+        selectedRow = row;
+        selectedCol = col;
+      }
+      // There is a piece already selected,
+      // but user can select another one of their pieces
+      else if (board[row][col] != null &&
+          board[row][col]!.isWhite == selectedPiece!.isWhite) {
         selectedPiece = board[row][col];
         selectedRow = row;
         selectedCol = col;
