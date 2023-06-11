@@ -477,6 +477,27 @@ class _GameBoardState extends State<GameBoard> {
       validMoves = [];
     });
 
+    // check if it's check mate
+    if (isCheckMate(!isWhiteTurn)) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text(
+            'CHECK MATE!',
+          ),
+          actions: [
+            // play again button
+            TextButton(
+              onPressed: resetGame,
+              child: const Text(
+                'Play Again',
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
     // change turns
     isWhiteTurn = !isWhiteTurn;
   }
@@ -559,6 +580,52 @@ class _GameBoardState extends State<GameBoard> {
 
     // if king in check, is not a safe move
     return !kingIsinCheck;
+  }
+
+  // IS IT CHECK MATE?
+  bool isCheckMate(bool isWhiteKing) {
+    // if king is not in check, then it's not check mate
+    if (!isKingInCheck(isWhiteKing)) {
+      return false;
+    }
+
+    // if there's at least one legal move for any of the player pieces
+    // then is not check mate
+
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        // skip empty squares and enemy pieces
+        if (board[i][j] == null || board[i][j]!.isWhite != isWhiteKing) {
+          continue;
+        }
+
+        List<List<int>> pieceValidMoves =
+            calculateRealValidMoves(i, j, board[i][j], true);
+
+        if (pieceValidMoves.isNotEmpty) {
+          return false;
+        }
+      }
+    }
+
+    // if none of the above conditions are met, then there're no legal moves
+    // left to make, it's check mate!
+    return true;
+  }
+
+  // RESET GAME
+  void resetGame() {
+    Navigator.pop(context);
+
+    _initializeBoard();
+    checkStatus = false;
+    isWhiteTurn = true;
+    whitePiecesTaken.clear();
+    blackPiecesTaken.clear();
+    whiteKingPosition = [7, 4];
+    blackKingPosition = [0, 4];
+
+    setState(() {});
   }
 
   @override
