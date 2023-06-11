@@ -6,15 +6,17 @@ import 'package:chess_game/values/colors.dart';
 class Square extends StatelessWidget {
   const Square({
     super.key,
-    required this.isWhite,
     required this.piece,
+    required this.isWhite,
     required this.isSelected,
+    required this.isValidMove,
     required this.onTap,
   });
 
-  final bool isWhite;
   final ChessPiece? piece;
+  final bool isWhite;
   final bool isSelected;
+  final bool isValidMove;
   final void Function()? onTap;
 
   @override
@@ -23,6 +25,8 @@ class Square extends StatelessWidget {
 
     if (isSelected) {
       squareColor = Colors.green;
+    } else if (isValidMove) {
+      squareColor = Colors.green.shade300;
     } else {
       squareColor = isWhite ? foregroundColor : backgroundColor;
     }
