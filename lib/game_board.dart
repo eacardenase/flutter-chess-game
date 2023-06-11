@@ -165,7 +165,7 @@ class _GameBoardState extends State<GameBoard> {
         ];
 
         for (final direction in directions) {
-          var i = 0;
+          var i = 1;
 
           while (true) {
             var newRow = row + i * direction[0];
@@ -279,6 +279,9 @@ class _GameBoardState extends State<GameBoard> {
     // initialize the board with nulls, meaning no pieces in those positions
     List<List<ChessPiece?>> newBoard =
         List.generate(8, (index) => List.generate(8, (index) => null));
+
+    // random piece for testing purposes
+    // newBoard[3][3] = ChessPiece(type: ChessPieceType.king, isWhite: true);
 
     // Place pawns
     for (int i = 0; i < 8; i++) {
